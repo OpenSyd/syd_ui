@@ -1,22 +1,14 @@
-
 from PySide2 import QtWidgets
-from PySide2.QtCore import Slot, Qt, QItemSelectionModel, QDateTime
-from .ui_SydTableWidget import Ui_SydTableWidget
-#from .DicomSeriesTableModel import DicomSeriesTableModel
-from PySide2.QtWidgets import QPushButton, QFrame
-from PySide2.QtWidgets import QDateTimeEdit, QLabel, QMenu, QAction, QLineEdit
-from PySide2.QtGui import QFont
-from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
+from PySide2.QtCore import Qt, Signal, QRegExp
 from .SydColumnFilterLineEditorWidget import SydColumnFilterLineEditorWidget
 
-import syd
 
 class SydColumnFilterHeader(QtWidgets.QHeaderView):
+
+    filterActivated = Signal()
+
     def __init__(self, parent=None):
         super(SydColumnFilterHeader, self).__init__(Qt.Horizontal, parent)
-        #self.button = QtWidgets.QPushButton('Button text', self)
-        #print('iir')
-        #self.setSortIndicatorShown(True)
         self.setSectionsClickable(True)
         self._editors = []
         self._padding = 2
@@ -24,13 +16,17 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
         self.sectionResized.connect(self.adjustPositions)
         parent.horizontalScrollBar().valueChanged.connect(self.adjustPositions)
 
-    def setFilterBoxes(self, count):
+    def setFilterBoxes(self, count, proxy):
         while self._editors:
             editor = self._editors.pop()
             editor.deleteLater()
         for index in range(count):
             editor = SydColumnFilterLineEditorWidget(self.parent())
-            # editor.returnPressed.connect(self.filterActivated.emit)
+            editor.line_edit.textChanged.connect(lambda text, col=index:
+                                   proxy.setFilterByColumn(QRegExp(text,
+                                                                   Qt.CaseInsensitive,
+                                                                   QRegExp.FixedString),
+                                                           col))
             self._editors.append(editor)
         self.adjustPositions()
 
@@ -59,4 +55,3 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
             self.setViewportMargins(0, 0, 0, 0)
         super().updateGeometries()
         self.adjustPositions()
-

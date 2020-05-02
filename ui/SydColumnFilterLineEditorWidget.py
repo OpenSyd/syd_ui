@@ -1,11 +1,7 @@
 from PySide2 import QtWidgets
-from PySide2.QtCore import Slot, Qt, QItemSelectionModel, QDateTime
+
 from .ui_SydColumnFilterLineEditorWidget import Ui_SydColumnFilterLineEditorWidget
-from .SydTableModel import SydTableModel
-from PySide2.QtWidgets import QPushButton, QFrame
-from PySide2.QtWidgets import QDateTimeEdit, QLabel, QMenu, QAction, QLineEdit
-from PySide2.QtGui import QFont
-from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
+
 
 class SydColumnFilterLineEditorWidget(QtWidgets.QWidget,
                                       Ui_SydColumnFilterLineEditorWidget):
