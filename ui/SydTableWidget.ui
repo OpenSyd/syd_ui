@@ -133,17 +133,10 @@
     </widget>
    </item>
    <item>
-    <widget class="SydTableView" name="table_view"/>
+    <widget class="QTableView" name="table_view"/>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>SydTableView</class>
-   <extends>QTableView</extends>
-   <header>.SydTableView.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

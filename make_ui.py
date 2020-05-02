@@ -21,6 +21,7 @@ else:
     print('Platform is not windows')
 
 gen_ui(w, 'SydTableWidget')
+gen_ui(w, 'SydColumnFilterLineEditorWidget')
 
 #print('Generate RC')
 #if w:

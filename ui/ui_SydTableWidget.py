@@ -15,8 +15,6 @@ from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
     QPixmap, QRadialGradient)
 from PySide2.QtWidgets import *
 
-from .SydTableView import SydTableView
-
 
 class Ui_SydTableWidget(object):
     def setupUi(self, SydTableWidget):
@@ -98,7 +96,7 @@ class Ui_SydTableWidget(object):
 
         self.verticalLayout.addWidget(self.scrollArea)
 
-        self.table_view = SydTableView(SydTableWidget)
+        self.table_view = QTableView(SydTableWidget)
         self.table_view.setObjectName(u"table_view")
 
         self.verticalLayout.addWidget(self.table_view)
