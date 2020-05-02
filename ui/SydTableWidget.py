@@ -1,39 +1,28 @@
-
 from PySide2 import QtWidgets
-from PySide2.QtCore import Slot, Qt, QItemSelectionModel
+from PySide2.QtCore import Slot, Qt, QItemSelectionModel, QDateTime
 from .ui_SydTableWidget import Ui_SydTableWidget
-from .DicomSeriesTableModel import DicomSeriesTableModel
-import syd
-
-# center column
-class AlignDelegate(QtWidgets.QStyledItemDelegate):
-    def initStyleOption(self, option, index):
-        super(AlignDelegate, self).initStyleOption(option, index)
-        option.displayAlignment = Qt.AlignCenter
+from .SydTableModel import SydTableModel
+from PySide2.QtWidgets import QPushButton, QFrame
+from PySide2.QtWidgets import QDateTimeEdit, QLabel, QMenu, QAction, QLineEdit
+from PySide2.QtGui import QFont
+from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
     def __init__(self, parent=None):
-        """
-        Constructor
-        """
         super().__init__(parent)
         self.setupUi(self)
+
+        # internal members
         self._db = None
+        self._data = None
         self._model = None
-        self.table_view.setAlternatingRowColors(True)
-        self.table_view.setSortingEnabled(True)
 
-
-    def set_db(self, db):
+    def set_data(self, db, data):
         self._db = db
-        img = syd.find(db['DicomSeries'])
+        self._data = data
 
-        self._model = DicomSeriesTableModel(img)
+        # define and set the model
+        self._model = SydTableModel(data)
         self.table_view.setModel(self._model)
-
-        delegate = AlignDelegate(self.table_view)
-        for i in range(0,len(self._model.col_names)):
-            self.table_view.setItemDelegateForColumn(i, delegate)
-        self.table_view.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)

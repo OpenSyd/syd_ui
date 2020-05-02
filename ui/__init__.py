@@ -1,3 +1,5 @@
 
 from .SydTableWidget import *
-from .DicomSeriesTableModel import *
+from .SydTableModel import *
+from .SydTableView import *
+

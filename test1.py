@@ -4,14 +4,16 @@
 import sys
 import syd
 from PySide2.QtWidgets import QApplication
-from syd_ui.ui import SydTableWidget
+from ui import SydTableWidget
+
+app = QApplication(sys.argv)
 
 f = 'lu.db'
 db = syd.open_db(f)
+img = syd.find(db['DicomSeries'])
 
-app = QApplication(sys.argv)
 m = SydTableWidget()
-m.set_db(db)
-
+m.set_data(db, img)
 m.show()
+
 app.exec_()
