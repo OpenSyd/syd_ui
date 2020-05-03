@@ -31,7 +31,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._header = SydColumnFilterHeader(self.table_view)
         ncol = self._model.columnCount(0)
         self.table_view.setHorizontalHeader(self._header)
-        self._header.filterActivated.connect(self.handleFilterActivated)
 
         # define and set the filter/sort proxy
         self._filter_proxy_model = SydTableSortFilterProxyModel(self._header)
@@ -41,8 +40,4 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.table_view.setModel(self._filter_proxy_model)
 
         # set it
-        self._header.setFilterBoxes(ncol, self._filter_proxy_model)
-
-    def handleFilterActivated(self):
-        print('here')
-
+        self._header.set_filter_editors(ncol, self._filter_proxy_model)

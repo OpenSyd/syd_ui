@@ -4,7 +4,6 @@ from .SydColumnFilterLineEditorWidget import SydColumnFilterLineEditorWidget
 
 
 class SydColumnFilterHeader(QtWidgets.QHeaderView):
-
     filterActivated = Signal()
 
     def __init__(self, parent=None):
@@ -13,32 +12,41 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
         self._editors = []
         self._padding = 2
         self._editor_height = 21
+        self._editors_idx = []
+        self._proxy = None
         self.sectionResized.connect(self.adjustPositions)
+        self.setSectionsMovable(True)
         parent.horizontalScrollBar().valueChanged.connect(self.adjustPositions)
+        self.sectionMoved.connect(self.slot_on_section_moved)
 
-    def setFilterBoxes(self, count, proxy):
+    def set_filter_editors(self, count, proxy):
+        self._proxy = proxy
         while self._editors:
             editor = self._editors.pop()
             editor.deleteLater()
         for index in range(count):
             editor = SydColumnFilterLineEditorWidget(self.parent())
             editor.line_edit.textChanged.connect(lambda text, col=index:
-                                   proxy.setFilterByColumn(QRegExp(text,
-                                                                   Qt.CaseInsensitive,
-                                                                   QRegExp.FixedString),
-                                                           col))
+                                                 proxy.set_filter_by_column(QRegExp(text,
+                                                                                 Qt.CaseInsensitive,
+                                                                                 QRegExp.FixedString),
+                                                                         col))
             self._editors.append(editor)
+            self._editors_idx.append(index)
         self.adjustPositions()
 
     def adjustPositions(self):
-        for index, editor in enumerate(self._editors):
-            # cannot really use editor height, because not always equal
+        for vindex in range(len(self._editors)):
+            idx = self.logicalIndex(vindex)  # because column may have move
+            editor = self._editors[idx]
+            # not clear which height to take.
             # height = editor.sizeHint().height()
             height = self._editor_height
             editor.move(
-                self.sectionPosition(index) - self.offset() + 6,
+                self.sectionPosition(idx) - self.offset() + 6,
                 height + (self._padding // 2))
-            editor.resize(self.sectionSize(index)-2, height)
+            editor.resize(self.sectionSize(idx) - 2, height)
+            editor.line_edit.setPlaceholderText(f'{vindex} {idx}')
 
     def sizeHint(self):
         size = super().sizeHint()
@@ -54,4 +62,8 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
         else:
             self.setViewportMargins(0, 0, 0, 0)
         super().updateGeometries()
+        self.adjustPositions()
+
+    def slot_on_section_moved(self):
+        # other args: logicalIndex, oldVisualIndex, newVisualIndex
         self.adjustPositions()

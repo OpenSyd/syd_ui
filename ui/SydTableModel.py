@@ -1,7 +1,5 @@
-import sys
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import Qt, Signal, QDate
-from PySide2.QtWidgets import QDateTimeEdit, QLabel
+from PySide2 import QtCore
+from PySide2.QtCore import Qt, Signal
 
 
 class SydTableModel(QtCore.QAbstractTableModel):

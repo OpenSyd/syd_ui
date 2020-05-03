@@ -18,6 +18,6 @@ class SydTableSortFilterProxyModel(QtCore.QSortFilterProxyModel):
                     return False
         return True
 
-    def setFilterByColumn(self, regex, column):
+    def set_filter_by_column(self, regex, column):
         self._filters[column] = regex
         self.invalidateFilter()
