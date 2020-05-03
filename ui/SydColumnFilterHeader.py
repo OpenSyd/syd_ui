@@ -46,7 +46,7 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
                 self.sectionPosition(idx) - self.offset() + 6,
                 height + (self._padding // 2))
             editor.resize(self.sectionSize(idx) - 2, height)
-            editor.line_edit.setPlaceholderText(f'{vindex} {idx}')
+            # editor.line_edit.setPlaceholderText(f'{vindex} {idx}')
 
     def sizeHint(self):
         size = super().sizeHint()
