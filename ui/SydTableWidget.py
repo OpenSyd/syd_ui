@@ -4,7 +4,8 @@ from .SydColumnFilterHeader import SydColumnFilterHeader
 from .SydTableModel import SydTableModel
 from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 from .ui_SydTableWidget import Ui_SydTableWidget
-
+from PySide2.QtWidgets import QPushButton, QFrame, QMenu, QAction, QLineEdit
+from PySide2.QtWidgets import QSizePolicy, QSpacerItem
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
@@ -39,5 +40,73 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._filter_proxy_model.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.table_view.setModel(self._filter_proxy_model)
 
-        # set it
+        # set the columns filters
         self._header.set_filter_editors(ncol, self._filter_proxy_model)
+
+        # setup the context menu
+        self._header.setContextMenuPolicy(Qt.CustomContextMenu)
+        self._header.customContextMenuRequested.connect(self.slot_on_column_header_popup)
+
+        # remove previous col buttons
+        c = self.layout_col_buttons.takeAt(0)
+        while c and c.widget():
+            c.widget().setParent(None)
+            del c
+            c = self.layout_col_buttons.takeAt(0)
+
+        # create new col buttons
+        def create_lambda(i):
+            return lambda: self.slot_on_col_button_clicked(i)
+        self.col_buttons = []
+        for i in range(0, ncol):
+            s = self._model._headers[i]
+            b = QPushButton(s)#, parent=self.layout_col_buttons)
+            b.clicked.connect(create_lambda(i))
+            b.setFlat(True)
+            b.setVisible(False)
+            self.layout_col_buttons.addWidget(b)
+            self.col_buttons.append(b)
+        h = QSpacerItem(878, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.layout_col_buttons.addItem(h)
+
+        # make the area invisible first
+        self.scrollArea.setVisible(False)
+
+    def slot_on_column_header_popup(self, pos):
+        idx = self.table_view.horizontalHeader().logicalIndexAt(pos)
+        menu = QMenu(self.table_view)
+        a = QAction(self)
+        name = self._model._col_names[idx]
+        a.setText(f'Hide {name}')
+        a.triggered.connect(lambda col_name=idx:
+                            self.slot_on_hide_column(idx))
+        b = QAction(self)
+        b.setText('Adjust width')
+        b.triggered.connect(lambda col_name=idx:
+                            self.slot_on_auto_width_column(idx))
+        menu.addAction(a)
+        menu.addAction(b)
+        menu.exec_(self.table_view.mapToGlobal(pos))
+
+    def slot_on_hide_column(self, idx):
+        # hide the column
+        self.table_view.setColumnHidden(idx, True)
+        # show the button
+        self.scrollArea.setVisible(True)
+        self.col_buttons[idx].setVisible(True)
+        self._header.updateGeometries()
+
+    def slot_on_col_button_clicked(self, idx):
+        # show the column
+        self.table_view.setColumnHidden(idx, False)
+        # hide the button
+        self.col_buttons[idx].setVisible(False)
+        for b in self.col_buttons:
+            if b.isVisible():
+                return
+        self.scrollArea.setVisible(False)
+        self._header.updateGeometries()
+
+    def slot_on_auto_width_column(self, idx):
+        self._header.setSectionResizeMode(idx, QtWidgets.QHeaderView.ResizeToContents)
+        self._header.updateGeometries()
