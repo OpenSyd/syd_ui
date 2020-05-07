@@ -37,6 +37,11 @@ class Ui_SydTableWidget(object):
 
         self.horizontalLayout.addWidget(self.edit_filter)
 
+        self.label_status = QLabel(SydTableWidget)
+        self.label_status.setObjectName(u"label_status")
+
+        self.horizontalLayout.addWidget(self.label_status)
+
         self.horizontalSpacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
@@ -113,6 +118,7 @@ class Ui_SydTableWidget(object):
     def retranslateUi(self, SydTableWidget):
         SydTableWidget.setWindowTitle(QCoreApplication.translate("SydTableWidget", u"Form", None))
         self.label.setText(QCoreApplication.translate("SydTableWidget", u"Filter :", None))
+        self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.button1.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button2.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button3.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
