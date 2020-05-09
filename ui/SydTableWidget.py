@@ -16,6 +16,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # internal members
         self._db = None
         self._data = None
+        self._table = None
         self._model = None
         self._filter_proxy_model = None
         self._header = None
@@ -24,9 +25,10 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # initial UI
         self.scrollArea.setVisible(False)
 
-    def set_data(self, db, data):
+    def set_data(self, db, table, data):
         self._db = db
         self._data = data
+        self._table = table
 
         # define and set the model
         self._model = SydTableModel(data)
@@ -140,4 +142,5 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
     def slot_on_col_filter_changed(self):
         n = self._filter_proxy_model.rowCount()
         N = self._model.rowCount(None)
-        self.label_status.setText(f'Number of elements {n}/{N}')
+        self.label_status.setText(f'Table {self._table} - Number of elements {n}/{N}')
+

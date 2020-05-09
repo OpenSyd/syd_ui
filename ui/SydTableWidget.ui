@@ -40,6 +40,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="button_reload">
+       <property name="text">
+        <string>reload</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label_status">
        <property name="text">
         <string>TextLabel</string>
