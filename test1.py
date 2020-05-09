@@ -4,16 +4,20 @@
 import sys
 import syd
 from PySide2.QtWidgets import QApplication
-from ui import SydTableWidget
+from ui import SydMainWindow
 
-app = QApplication(sys.argv)
+def main():
+    app = QApplication(sys.argv)
 
-f = 'lu.db'
-db = syd.open_db(f)
-img = syd.find(db['DicomSeries'])
+    f = 'lu.db'
+    db = syd.open_db(f)
 
-m = SydTableWidget()
-m.set_data(db, img)
-m.show()
+    m = SydMainWindow()
+    m.set_database(db)
+    m.slot_on_change_table('Patient')
+    m.show()
+    app.exec_()
 
-app.exec_()
+
+if __name__ == '__main__':
+    main()

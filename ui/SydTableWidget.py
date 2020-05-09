@@ -21,6 +21,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._header = None
         self._toggle_width_menus = []
 
+        # initial UI
+        self.scrollArea.setVisible(False)
+
     def set_data(self, db, data):
         self._db = db
         self._data = data
@@ -77,9 +80,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
             b.setText('Toggle adjust width')
             b.setCheckable(True)
             b.setChecked(False)
-            #b.triggered.connect(lambda col_name=i:
-            #                    self.slot_on_auto_width_column(i))
             self._toggle_width_menus.append(b)
+            #self.slot_on_auto_width_column(i)
 
         # make the area invisible first
         self.scrollArea.setVisible(False)
@@ -89,6 +91,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
         # allow sorting
         self.table_view.setSortingEnabled(True)
+
+        self._header.updateGeometries()
+
 
     def slot_on_column_header_popup(self, pos):
         idx = self.table_view.horizontalHeader().logicalIndexAt(pos)

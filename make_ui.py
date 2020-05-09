@@ -20,6 +20,7 @@ if 'Windows' in  s:
 else:
     print('Platform is not windows')
 
+gen_ui(w, 'SydMainWindow')
 gen_ui(w, 'SydTableWidget')
 gen_ui(w, 'SydColumnFilterLineEditorWidget')
 
