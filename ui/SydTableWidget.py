@@ -93,7 +93,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
         # allow sorting
         self.table_view.setSortingEnabled(True)
-
+        self._filter_proxy_model.sort(0, Qt.AscendingOrder)
+        self._filter_proxy_model.invalidateFilter()
         self._header.updateGeometries()
 
 

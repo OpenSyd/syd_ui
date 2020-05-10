@@ -28,7 +28,7 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
 
 
     def slot_on_change_table(self, table):
-        self.statusbar.showMessage(f"Loading table {table}")
+        self.statusbar.showMessage(f"{table} table loaded")
         db = self._db
         self._table = table
         elements = syd.find_all(db[table])
@@ -44,6 +44,10 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
 
     def slot_on_reload(self):
         elements = syd.find_all(self._db[self._table])
-        self._table_widget._model._data = elements
+        model = self._table_widget._model
+        model._data = elements
         self._table_widget._filter_proxy_model.invalidateFilter()
-        self._table_widget._model.layoutChanged.emit()
+        start = model.createIndex(0, 0)
+        end = model.createIndex(len(elements), len(elements[0]))
+        model.dataChanged.emit(start, end, Qt.DisplayRole)
+        self._table_widget._filter_proxy_model.invalidateFilter()
