@@ -41,6 +41,7 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         self.setCentralWidget(self._table_widget)
         self._table_widget.button_reload.clicked.connect(self.slot_on_reload)
 
+
     def slot_on_reload(self):
         elements = syd.find_all(self._db[self._table])
         self._table_widget._model._data = elements

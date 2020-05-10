@@ -31,7 +31,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._table = table
 
         # define and set the model
-        self._model = SydTableModel(data)
+        self._model = SydTableModel(db, table, data)
         # self.table_view.setModel(self._model)
 
         # define own header (with column filter)
@@ -142,5 +142,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
     def slot_on_col_filter_changed(self):
         n = self._filter_proxy_model.rowCount()
         N = self._model.rowCount(None)
-        self.label_status.setText(f'Table {self._table} - Number of elements {n}/{N}')
+        self.label_tablename.setText(f'{self._table}')
+        self.label_status.setText(f'{n}/{N}')
 

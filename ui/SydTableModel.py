@@ -1,14 +1,18 @@
 from PySide2 import QtCore
 from PySide2.QtCore import Qt, Signal
-
+import syd
+import copy
+from datetime import datetime
 
 class SydTableModel(QtCore.QAbstractTableModel):
     players_changed = Signal()
 
-    def __init__(self, data):
+    def __init__(self, db, table, data):
         super(SydTableModel, self).__init__()
 
         # internal members
+        self._db = db
+        self._table = table
         self._data = data
         self._headers = []
         self._col_names = []
@@ -35,10 +39,22 @@ class SydTableModel(QtCore.QAbstractTableModel):
         if role == Qt.DisplayRole:
             if v is None:
                 return ''
-            # what if date ?
+            # what if date ?ZZ
             if type(v) is int:
                 return v
             return str(v)
+        if role == Qt.EditRole:
+            table = self._db[self._table]
+            # update first in case something changed
+            element = syd.find_one(table, id=element['id'])
+            v = element[h]
+            if v is None:
+                return ''
+            # what if date -> FIXME later with delegate
+            if type(v) is int:
+                return v
+            return str(v)
+
 
     # noinspection PyMethodOverriding
     def rowCount(self, index):
@@ -53,30 +69,40 @@ class SydTableModel(QtCore.QAbstractTableModel):
 
     def flags(self, index):
         original_flags = super(SydTableModel, self).flags(index)
-        # if index.column()>1:
-        # return original_flags
+        col = index.column()
+        if col == 0: # first is 'id', is not editable # FIXME do a list
+            return original_flags
         return original_flags | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     # noinspection PyMethodOverriding
     def setData(self, index, value, role):
-        # if not index.isValid():
-        #    return False
-        # if role != QtCore.Qt.EditRole:
-        #     return False
-        # row = index.row()
-        # if row < 0 or row >= len(self._players):
-        #     return False
-        # column = index.column()
-        # if column < 0 or column >= 2:
-        #     return False
-        # if column == 0:
-        #     self._players[row].set_name(0, value)
-        #     self.dataChanged.emit(index, index)
-        #     return True
-        # if column == 1:
-        #     self._players[row].set_name(1, value)
-        #     self.dataChanged.emit(index, index)
-        #     return True
+        if not index.isValid():
+            return False
+        if role != QtCore.Qt.EditRole:
+             return False
+        row = index.row()
+        col = index.column()
+        cname = self._headers[col]
+        table = self._db[self._table]
+        # update first
+        element = self._data[row]
+        #print('before update', element)
+        #element = syd.find_one(table, id=element['id'])
+        #print('after update', element)
+        previous = copy.deepcopy(element)
+        # special case for some type
+        if isinstance(element[cname], datetime):
+            element[cname] = syd.str_to_date(value)
+        else:
+            element[cname] = value
+        # update the db
+        try:
+            syd.update_one(table, element)
+            #return True
+        except:
+            # FIXME signal to warn user (status)
+            print('Cannot update ERROR')
+            self._data[index.row()] = previous
         return False
 
     # noinspection PyMethodOverriding

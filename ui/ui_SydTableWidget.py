@@ -25,6 +25,12 @@ class Ui_SydTableWidget(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.label_tablename = QLabel(SydTableWidget)
+        self.label_tablename.setObjectName(u"label_tablename")
+        self.label_tablename.setStyleSheet(u"color: rgb(0, 0, 255)")
+
+        self.horizontalLayout.addWidget(self.label_tablename)
+
         self.label = QLabel(SydTableWidget)
         self.label.setObjectName(u"label")
 
@@ -47,9 +53,9 @@ class Ui_SydTableWidget(object):
 
         self.horizontalLayout.addWidget(self.label_status)
 
-        self.horizontalSpacer = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout.addItem(self.horizontalSpacer)
+        self.horizontalLayout.addItem(self.horizontalSpacer_4)
 
 
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -69,7 +75,7 @@ class Ui_SydTableWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaContent = QWidget()
         self.scrollAreaContent.setObjectName(u"scrollAreaContent")
-        self.scrollAreaContent.setGeometry(QRect(0, 0, 1046, 28))
+        self.scrollAreaContent.setGeometry(QRect(0, 0, 1040, 44))
         self.layout_col_buttons = QHBoxLayout(self.scrollAreaContent)
         self.layout_col_buttons.setSpacing(0)
         self.layout_col_buttons.setObjectName(u"layout_col_buttons")
@@ -122,6 +128,7 @@ class Ui_SydTableWidget(object):
 
     def retranslateUi(self, SydTableWidget):
         SydTableWidget.setWindowTitle(QCoreApplication.translate("SydTableWidget", u"Form", None))
+        self.label_tablename.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("SydTableWidget", u"Filter :", None))
         self.button_reload.setText(QCoreApplication.translate("SydTableWidget", u"reload", None))
         self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
