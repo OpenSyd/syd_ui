@@ -86,9 +86,6 @@ class SydTableModel(QtCore.QAbstractTableModel):
         table = self._db[self._table]
         # update first
         element = self._data[row]
-        #print('before update', element)
-        #element = syd.find_one(table, id=element['id'])
-        #print('after update', element)
         previous = copy.deepcopy(element)
         # special case for some type
         if isinstance(element[cname], datetime):
@@ -98,7 +95,6 @@ class SydTableModel(QtCore.QAbstractTableModel):
         # update the db
         try:
             syd.update_one(table, element)
-            #return True
         except:
             # FIXME signal to warn user (status)
             print('Cannot update ERROR')

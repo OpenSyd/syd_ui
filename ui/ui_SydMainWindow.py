@@ -1,63 +1,50 @@
 # -*- coding: utf-8 -*-
 
-################################################################################
-## Form generated from reading UI file 'SydMainWindow.ui'
-##
-## Created by: Qt User Interface Compiler version 5.14.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
+# Form implementation generated from reading ui file 'ui/SydMainWindow.ui',
+# licensing of 'ui/SydMainWindow.ui' applies.
+#
+# Created: Sun May 10 18:04:37 2020
+#      by: pyside2-uic  running on PySide2 5.13.2
+#
+# WARNING! All changes made in this file will be lost!
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
-from PySide2.QtWidgets import *
-
+from PySide2 import QtCore, QtGui, QtWidgets
 
 class Ui_SydMainWindow(object):
     def setupUi(self, SydMainWindow):
-        if not SydMainWindow.objectName():
-            SydMainWindow.setObjectName(u"SydMainWindow")
+        SydMainWindow.setObjectName("SydMainWindow")
         SydMainWindow.resize(936, 612)
-        self.actionPatient = QAction(SydMainWindow)
-        self.actionPatient.setObjectName(u"actionPatient")
-        self.actionQuit = QAction(SydMainWindow)
-        self.actionQuit.setObjectName(u"actionQuit")
-        self.central_widget = QWidget(SydMainWindow)
-        self.central_widget.setObjectName(u"central_widget")
+        self.central_widget = QtWidgets.QWidget(SydMainWindow)
+        self.central_widget.setObjectName("central_widget")
         SydMainWindow.setCentralWidget(self.central_widget)
-        self.menubar = QMenuBar(SydMainWindow)
-        self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 936, 22))
-        self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
-        self.menu_tables = QMenu(self.menubar)
-        self.menu_tables.setObjectName(u"menu_tables")
+        self.menubar = QtWidgets.QMenuBar()
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 936, 22))
+        self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
+        self.menu_tables = QtWidgets.QMenu(self.menubar)
+        self.menu_tables.setObjectName("menu_tables")
         SydMainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(SydMainWindow)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar = QtWidgets.QStatusBar(SydMainWindow)
         self.statusbar.setEnabled(True)
+        self.statusbar.setObjectName("statusbar")
         SydMainWindow.setStatusBar(self.statusbar)
-
+        self.actionPatient = QtWidgets.QAction(SydMainWindow)
+        self.actionPatient.setObjectName("actionPatient")
+        self.actionQuit = QtWidgets.QAction(SydMainWindow)
+        self.actionQuit.setObjectName("actionQuit")
+        self.menuFile.addAction(self.actionQuit)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menu_tables.menuAction())
-        self.menuFile.addAction(self.actionQuit)
 
         self.retranslateUi(SydMainWindow)
-
-        QMetaObject.connectSlotsByName(SydMainWindow)
-    # setupUi
+        QtCore.QMetaObject.connectSlotsByName(SydMainWindow)
 
     def retranslateUi(self, SydMainWindow):
-        SydMainWindow.setWindowTitle(QCoreApplication.translate("SydMainWindow", u"MainWindow", None))
-        self.actionPatient.setText(QCoreApplication.translate("SydMainWindow", u"Patient", None))
-        self.actionQuit.setText(QCoreApplication.translate("SydMainWindow", u"Quit", None))
-#if QT_CONFIG(shortcut)
-        self.actionQuit.setShortcut(QCoreApplication.translate("SydMainWindow", u"Ctrl+Q", None))
-#endif // QT_CONFIG(shortcut)
-        self.menuFile.setTitle(QCoreApplication.translate("SydMainWindow", u"File", None))
-        self.menu_tables.setTitle(QCoreApplication.translate("SydMainWindow", u"Tables", None))
-    # retranslateUi
+        SydMainWindow.setWindowTitle(QtWidgets.QApplication.translate("SydMainWindow", "MainWindow", None, -1))
+        self.menuFile.setTitle(QtWidgets.QApplication.translate("SydMainWindow", "File", None, -1))
+        self.menu_tables.setTitle(QtWidgets.QApplication.translate("SydMainWindow", "Tables", None, -1))
+        self.actionPatient.setText(QtWidgets.QApplication.translate("SydMainWindow", "Patient", None, -1))
+        self.actionQuit.setText(QtWidgets.QApplication.translate("SydMainWindow", "Quit", None, -1))
+        self.actionQuit.setShortcut(QtWidgets.QApplication.translate("SydMainWindow", "Ctrl+Q", None, -1))
 
