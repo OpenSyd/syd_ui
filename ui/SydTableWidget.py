@@ -32,7 +32,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
         # define and set the model
         self._model = SydTableModel(db, table, data)
-        # self.table_view.setModel(self._model)
 
         # define own header (with column filter)
         self._header = SydColumnFilterHeader(self.table_view)
@@ -95,6 +94,10 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.table_view.horizontalHeader().sectionDoubleClicked.\
             connect(self.slot_on_toggle_auto_width_column)
 
+        # global filter
+        self.edit_filter.textChanged.connect(self.slot_on_filter_changed)
+        self.edit_filter.setClearButtonEnabled(True)
+
         # allow sorting
         self.table_view.setSortingEnabled(True)
         self._filter_proxy_model.sort(0, Qt.AscendingOrder)
@@ -156,3 +159,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.label_tablename.setText(f'{self._table}')
         self.label_status.setText(f'{n}/{N}')
 
+
+    def slot_on_filter_changed(self):
+        f = self.edit_filter
+        self._filter_proxy_model.set_global_filter(f.text())
