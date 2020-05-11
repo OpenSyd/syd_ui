@@ -91,6 +91,10 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # initial nb of elements
         self.slot_on_col_filter_changed()
 
+        # double click header
+        self.table_view.horizontalHeader().sectionDoubleClicked.\
+            connect(self.slot_on_toggle_auto_width_column)
+
         # allow sorting
         self.table_view.setSortingEnabled(True)
         self._filter_proxy_model.sort(0, Qt.AscendingOrder)
@@ -131,6 +135,12 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
                 return
         self.scrollArea.setVisible(False)
         self._header.updateGeometries()
+
+    def slot_on_toggle_auto_width_column(self, idx):
+        print(idx)
+        b = self._toggle_width_menus[idx]
+        b.setChecked(not b.isChecked())
+        self.slot_on_auto_width_column(idx)
 
     def slot_on_auto_width_column(self, idx):
         b = self._toggle_width_menus[idx]

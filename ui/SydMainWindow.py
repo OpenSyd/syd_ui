@@ -5,6 +5,7 @@ from .ui_SydMainWindow import Ui_SydMainWindow
 from functools import partial
 from ui import SydTableWidget
 import syd
+import sys
 
 
 class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
@@ -15,7 +16,6 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         self._db = None
         # on OSX prefer to not be the native menu bar because focus issue
         self.menubar.setNativeMenuBar(False)
-
 
     def set_database(self, db):
         self._db = db
