@@ -4,7 +4,6 @@ from .SydColumnFilterLineEditorWidget import SydColumnFilterLineEditorWidget
 
 
 class SydColumnFilterHeader(QtWidgets.QHeaderView):
-
     filterActivated = Signal()
 
     def __init__(self, parent=None):
@@ -68,6 +67,6 @@ class SydColumnFilterHeader(QtWidgets.QHeaderView):
 
     def slot_on_filer_text_changed(self, text, col):
         self._proxy.set_filter_by_column(QRegExp(text,
-                                           Qt.CaseInsensitive,
-                                           QRegExp.FixedString), col)
+                                                 Qt.CaseInsensitive,
+                                                 QRegExp.FixedString), col)
         self.filterActivated.emit()

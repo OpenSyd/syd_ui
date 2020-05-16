@@ -2,7 +2,6 @@ from functools import partial
 
 import syd
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QAction
 
 from ui import SydTableWidget

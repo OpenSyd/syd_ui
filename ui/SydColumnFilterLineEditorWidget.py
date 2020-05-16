@@ -12,4 +12,3 @@ class SydColumnFilterLineEditorWidget(QtWidgets.QWidget,
 
         self.line_edit.setClearButtonEnabled(True)
         self.line_edit.setPlaceholderText('Filter')
-

@@ -4,6 +4,7 @@ import syd
 import copy
 from datetime import datetime
 
+
 class SydTableModel(QtCore.QAbstractTableModel):
     players_changed = Signal()
 
@@ -55,7 +56,6 @@ class SydTableModel(QtCore.QAbstractTableModel):
                 return v
             return str(v)
 
-
     # noinspection PyMethodOverriding
     def rowCount(self, index):
         # The length of the outer list.
@@ -70,7 +70,7 @@ class SydTableModel(QtCore.QAbstractTableModel):
     def flags(self, index):
         original_flags = super(SydTableModel, self).flags(index)
         col = index.column()
-        if col == 0: # first is 'id', is not editable # FIXME do a list
+        if col == 0:  # first is 'id', is not editable # FIXME do a list
             return original_flags
         return original_flags | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
@@ -79,7 +79,7 @@ class SydTableModel(QtCore.QAbstractTableModel):
         if not index.isValid():
             return False
         if role != QtCore.Qt.EditRole:
-             return False
+            return False
         row = index.row()
         col = index.column()
         cname = self._headers[col]
