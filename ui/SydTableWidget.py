@@ -1,11 +1,13 @@
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
+from PySide2.QtWidgets import QPushButton, QMenu, QAction
+from PySide2.QtWidgets import QSizePolicy, QSpacerItem
+
 from .SydColumnFilterHeader import SydColumnFilterHeader
 from .SydTableModel import SydTableModel
 from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 from .ui_SydTableWidget import Ui_SydTableWidget
-from PySide2.QtWidgets import QPushButton, QFrame, QMenu, QAction, QLineEdit
-from PySide2.QtWidgets import QSizePolicy, QSpacerItem
+
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
@@ -61,12 +63,13 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
             c = self.layout_col_buttons.takeAt(0)
 
         # create new col buttons
-        def create_lambda(i):
-            return lambda: self.slot_on_col_button_clicked(i)
+        def create_lambda(icol):
+            return lambda: self.slot_on_col_button_clicked(icol)
+
         self.col_buttons = []
         for i in range(0, ncol):
             s = self._model._headers[i]
-            b = QPushButton(s)#, parent=self.layout_col_buttons)
+            b = QPushButton(s)  # , parent=self.layout_col_buttons)
             b.clicked.connect(create_lambda(i))
             b.setFlat(True)
             b.setVisible(False)
@@ -82,7 +85,10 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
             b.setCheckable(True)
             b.setChecked(False)
             self._toggle_width_menus.append(b)
-            #self.slot_on_auto_width_column(i)
+            # special case for first column ('id')
+            if i == 0:
+                b.setChecked(True)
+                self.slot_on_auto_width_column(i)
 
         # make the area invisible first
         self.scrollArea.setVisible(False)
@@ -91,7 +97,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.slot_on_col_filter_changed()
 
         # double click header
-        self.table_view.horizontalHeader().sectionDoubleClicked.\
+        self.table_view.horizontalHeader().sectionDoubleClicked. \
             connect(self.slot_on_toggle_auto_width_column)
 
         # global filter
@@ -103,7 +109,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._filter_proxy_model.sort(0, Qt.AscendingOrder)
         self._filter_proxy_model.invalidateFilter()
         self._header.updateGeometries()
-
 
     def slot_on_column_header_popup(self, pos):
         idx = self.table_view.horizontalHeader().logicalIndexAt(pos)
@@ -140,7 +145,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._header.updateGeometries()
 
     def slot_on_toggle_auto_width_column(self, idx):
-        print(idx)
         b = self._toggle_width_menus[idx]
         b.setChecked(not b.isChecked())
         self.slot_on_auto_width_column(idx)
@@ -155,10 +159,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
     def slot_on_col_filter_changed(self):
         n = self._filter_proxy_model.rowCount()
-        N = self._model.rowCount(None)
+        t = self._model.rowCount(None)
         self.label_tablename.setText(f'{self._table}')
-        self.label_status.setText(f'{n}/{N}')
-
+        self.label_status.setText(f'{n}/{t}')
 
     def slot_on_filter_changed(self):
         f = self.edit_filter

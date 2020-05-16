@@ -10,10 +10,9 @@ def main():
     app = QApplication(sys.argv)
 
     f = 'lu.db'
-    db = syd.open_db(f)
 
     m = SydMainWindow()
-    m.set_database(db)
+    m.set_database(f)
     m.slot_on_change_table('Patient')
     m.show()
     app.exec_()

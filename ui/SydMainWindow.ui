@@ -34,8 +34,14 @@
      <string>Tables</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu_views">
+    <property name="title">
+     <string>Views</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_tables"/>
+   <addaction name="menu_views"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="enabled">

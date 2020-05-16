@@ -1,11 +1,12 @@
+from functools import partial
+
+import syd
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QAction, QProgressDialog
-from .ui_SydMainWindow import Ui_SydMainWindow
-from functools import partial
+from PySide2.QtWidgets import QAction
+
 from ui import SydTableWidget
-import syd
-import sys
+from .ui_SydMainWindow import Ui_SydMainWindow
 
 
 class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
@@ -14,11 +15,17 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         super().__init__(parent)
         self.setupUi(self)
         self._db = None
+        self._table = None
+        self._table_widget = None
+        self._filename = None
         # on OSX prefer to not be the native menu bar because focus issue
         self.menubar.setNativeMenuBar(False)
 
-    def set_database(self, db):
+    def set_database(self, filename):
+        db = syd.open_db(filename)
         self._db = db
+        self._filename = filename
+
         # create tables menu
         for table in db.tables:
             a = QAction(self)
@@ -26,12 +33,23 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
             a.triggered.connect(partial(self.slot_on_change_table, table))
             self.menu_tables.addAction(a)
 
+        # create views menu
+        views = syd.get_view_names(db)
+        for v in views:
+            a = QAction(self)
+            a.setText(v)
+            a.triggered.connect(partial(self.slot_on_change_table, v))
+            self.menu_views.addAction(a)
 
     def slot_on_change_table(self, table):
         self.statusbar.showMessage(f"{table} table loaded")
-        db = self._db
+        # not clear why I need to reopen the db here
+        # (not needed for tables, needed for view)
+        db = syd.open_db(self._filename)
         self._table = table
-        elements = syd.find_all(db[table])
+        t = db.load_table(table)
+        print(t.columns)
+        elements = syd.find_all(t)
         # remove previous widget
         w = self.centralWidget()
         del w
@@ -41,13 +59,6 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         self.setCentralWidget(self._table_widget)
         self._table_widget.button_reload.clicked.connect(self.slot_on_reload)
 
-
     def slot_on_reload(self):
-        elements = syd.find_all(self._db[self._table])
-        model = self._table_widget._model
-        model._data = elements
-        self._table_widget._filter_proxy_model.invalidateFilter()
-        start = model.createIndex(0, 0)
-        end = model.createIndex(len(elements), len(elements[0]))
-        model.dataChanged.emit(start, end, Qt.DisplayRole)
-        self._table_widget._filter_proxy_model.invalidateFilter()
+        # later -> keep filters if the columns are identical
+        self.slot_on_change_table(self._table)

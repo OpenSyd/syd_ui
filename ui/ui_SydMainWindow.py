@@ -33,6 +33,8 @@ class Ui_SydMainWindow(object):
         self.menuFile.setObjectName(u"menuFile")
         self.menu_tables = QMenu(self.menubar)
         self.menu_tables.setObjectName(u"menu_tables")
+        self.menu_views = QMenu(self.menubar)
+        self.menu_views.setObjectName(u"menu_views")
         SydMainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(SydMainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -41,6 +43,7 @@ class Ui_SydMainWindow(object):
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menu_tables.menuAction())
+        self.menubar.addAction(self.menu_views.menuAction())
         self.menuFile.addAction(self.actionQuit)
 
         self.retranslateUi(SydMainWindow)
@@ -57,5 +60,6 @@ class Ui_SydMainWindow(object):
 #endif // QT_CONFIG(shortcut)
         self.menuFile.setTitle(QCoreApplication.translate("SydMainWindow", u"File", None))
         self.menu_tables.setTitle(QCoreApplication.translate("SydMainWindow", u"Tables", None))
+        self.menu_views.setTitle(QCoreApplication.translate("SydMainWindow", u"Views", None))
     # retranslateUi
 
