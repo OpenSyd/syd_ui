@@ -1,7 +1,7 @@
 from PySide2 import QtWidgets
 from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QPushButton, QMenu, QAction
-from PySide2.QtWidgets import QSizePolicy, QSpacerItem
+from PySide2.QtWidgets import QSizePolicy, QSpacerItem, QTableView
 
 from .SydColumnFilterHeader import SydColumnFilterHeader
 from .SydTableModel import SydTableModel
@@ -11,14 +11,14 @@ from .ui_SydTableWidget import Ui_SydTableWidget
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, table, parent=None):
         super().__init__(parent)
         self.setupUi(self)
 
         # internal members
         self._db = None
         self._data = None
-        self._table = None
+        self._table = table
         self._model = None
         self._filter_proxy_model = None
         self._header = None
@@ -35,10 +35,17 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # define and set the model
         self._model = SydTableModel(db, table, data)
 
+        # remove previous widget
+        self.table_view.setParent(None)
+        del self.table_view
+
+        # create new one
+        self.table_view = QTableView(self)
+        self.verticalLayout.addWidget(self.table_view)
+
         # define own header (with column filter)
         self._header = SydColumnFilterHeader(self.table_view)
         ncol = self._model.columnCount(0)
-        self.table_view.setHorizontalHeader(self._header)
 
         # define and set the filter/sort proxy
         self._filter_proxy_model = SydTableSortFilterProxyModel(self._header)
@@ -54,6 +61,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._header.setContextMenuPolicy(Qt.CustomContextMenu)
         self._header.customContextMenuRequested.connect(self.slot_on_column_header_popup)
         self._header.filterActivated.connect(self.slot_on_col_filter_changed)
+
+        self.table_view.setHorizontalHeader(self._header)
 
         # remove previous col buttons
         c = self.layout_col_buttons.takeAt(0)
@@ -109,6 +118,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._filter_proxy_model.sort(0, Qt.AscendingOrder)
         self._filter_proxy_model.invalidateFilter()
         self._header.updateGeometries()
+
 
     def slot_on_column_header_popup(self, pos):
         idx = self.table_view.horizontalHeader().logicalIndexAt(pos)

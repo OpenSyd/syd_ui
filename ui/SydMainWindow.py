@@ -24,12 +24,17 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         db = syd.open_db(filename)
         self._db = db
         self._filename = filename
+        self.setup_table_menus()
 
+    def setup_table_menus(self):
+        db = self._db
+        self.menu_tables.clear()
+        self.menu_views.clear()
         # create tables menu
         for table in db.tables:
             a = QAction(self)
             a.setText(table)
-            a.triggered.connect(partial(self.slot_on_change_table, table))
+            a.triggered.connect(partial(self.slot_on_load_table, table))
             self.menu_tables.addAction(a)
 
         # create views menu
@@ -37,27 +42,38 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         for v in views:
             a = QAction(self)
             a.setText(v)
-            a.triggered.connect(partial(self.slot_on_change_table, v))
+            a.triggered.connect(partial(self.slot_on_load_table, v))
             self.menu_views.addAction(a)
 
-    def slot_on_change_table(self, table):
+    def slot_on_load_table(self, table):
+        self._table = table
+
+        # table already loaded in a tab ?
+        for i in range(self.tab_widget.count()):
+            if self.tab_widget.widget(i)._table == table:
+                self.slot_on_reload(i)
+                self.tab_widget.setCurrentIndex(i)
+                return
+
+        # new tab
         self.statusbar.showMessage(f"{table} table loaded")
+        self._table_widget = SydTableWidget(table, self)
+        self.tab_widget.addTab(self._table_widget, f"{table}")
+        idx = self.tab_widget.indexOf(self._table_widget)
+        self._table_widget.button_reload.clicked.connect(partial(self.slot_on_reload, idx))
+        self.slot_on_reload(idx)
+        self.tab_widget.setCurrentIndex(idx)
+
+    def slot_on_reload(self, tab_index):
+        # later -> keep filters if the columns are identical.
         # not clear why I need to reopen the db here
         # (not needed for tables, needed for view)
         db = syd.open_db(self._filename)
-        self._table = table
+        w = self.tab_widget.widget(tab_index)
+        table = w._table
         t = db.load_table(table)
-        print(t.columns)
         elements = syd.find_all(t)
-        # remove previous widget
-        w = self.centralWidget()
-        del w
-        # setup table
-        self._table_widget = SydTableWidget(self)
-        self._table_widget.set_data(db, table, elements)
-        self.setCentralWidget(self._table_widget)
-        self._table_widget.button_reload.clicked.connect(self.slot_on_reload)
+        w.set_data(db, table, elements)
+        # re-setup the menus, because views may changed 
+        self.setup_table_menus()
 
-    def slot_on_reload(self):
-        # later -> keep filters if the columns are identical
-        self.slot_on_change_table(self._table)

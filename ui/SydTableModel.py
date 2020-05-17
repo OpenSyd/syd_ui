@@ -19,7 +19,7 @@ class SydTableModel(QtCore.QAbstractTableModel):
         self._col_names = []
 
         # create headers
-        for h in data[0]:
+        for h in db[table].columns:#data[0]:
             self._headers.append(h)
             # remove some header such as table_name
             # check all elements

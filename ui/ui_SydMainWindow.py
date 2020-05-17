@@ -25,6 +25,13 @@ class Ui_SydMainWindow(object):
         self.actionQuit.setObjectName(u"actionQuit")
         self.central_widget = QWidget(SydMainWindow)
         self.central_widget.setObjectName(u"central_widget")
+        self.gridLayout = QGridLayout(self.central_widget)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.tab_widget = QTabWidget(self.central_widget)
+        self.tab_widget.setObjectName(u"tab_widget")
+
+        self.gridLayout.addWidget(self.tab_widget, 0, 0, 1, 1)
+
         SydMainWindow.setCentralWidget(self.central_widget)
         self.menubar = QMenuBar(SydMainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -48,6 +55,9 @@ class Ui_SydMainWindow(object):
 
         self.retranslateUi(SydMainWindow)
         self.actionQuit.triggered.connect(SydMainWindow.close)
+
+        self.tab_widget.setCurrentIndex(-1)
+
 
         QMetaObject.connectSlotsByName(SydMainWindow)
     # setupUi
