@@ -13,7 +13,7 @@ def main():
     f = 'lu.db'
     m = SydMainWindow()
     m.set_database(f)
-    m.slot_on_load_table('Patient')
+    m.slot_on_load_new_table('Patient')
     m.show()
     app.exec_()
 

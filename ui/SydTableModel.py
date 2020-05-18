@@ -6,12 +6,14 @@ from datetime import datetime
 
 
 class SydTableModel(QtCore.QAbstractTableModel):
-    players_changed = Signal()
 
-    def __init__(self, db, table, data):
+    table_should_reload = Signal(str, str)
+
+    def __init__(self, filename, db, table, data):
         super(SydTableModel, self).__init__()
 
         # internal members
+        self._filename = filename
         self._db = db
         self._table = table
         self._data = data
@@ -40,8 +42,8 @@ class SydTableModel(QtCore.QAbstractTableModel):
         if role == Qt.DisplayRole:
             if v is None:
                 return ''
-            # what if date ?ZZ
-            if type(v) is int:
+            # what if date ?
+            if type(v) is int or type(v) is float:
                 return v
             return str(v)
         if role == Qt.EditRole:
@@ -76,29 +78,61 @@ class SydTableModel(QtCore.QAbstractTableModel):
 
     # noinspection PyMethodOverriding
     def setData(self, index, value, role):
+        # return if no edit
         if not index.isValid():
             return False
         if role != QtCore.Qt.EditRole:
             return False
+
+        # prepare information
         row = index.row()
         col = index.column()
-        cname = self._headers[col]
-        table = self._db[self._table]
-        # update first
+        col_name = self._headers[col]
+        table_name = self._table
+        db = self._db
+
+        # copy previous in case of error
         element = self._data[row]
         previous = copy.deepcopy(element)
+
+        # determine if view or table
+        # if it is a view, must get the real col and table
+        real_col_name = col_name
+        real_table_name = table_name
+        real_element = element
+        if table_name not in db.tables:
+            view = syd.find_one(db['FormatView'], view_name=table_name)
+            columns_format = syd.parse_columns_view_format(db, view.format)
+            format = columns_format[col_name]
+            if len(format.tables) > 0:
+                real_table_name = format.tables[-1]
+                rid = real_table_name.lower() + '_id'
+            else:
+                real_table_name = view.table_name
+                rid = 'id'
+            real_col_name = format.id
+            e = syd.find_one(db[view.table_name], id=element.id)
+            real_element = syd.find_one(self._db[real_table_name], id=e[rid])
+
         # special case for some type
-        if isinstance(element[cname], datetime):
-            element[cname] = syd.str_to_date(value)
+        if isinstance(real_element[real_col_name], datetime):
+            real_element[real_col_name] = syd.str_to_date(value)
         else:
-            element[cname] = value
+            real_element[real_col_name] = value
+
         # update the db
         try:
-            syd.update_one(table, element)
+            syd.update_one(db[real_table_name], real_element)
+            # if this is a view, update view
+            if real_table_name != table_name:
+                self._data = syd.find_all(db[table_name])
+            # other views/tables may be updated
+            self.table_should_reload.emit(table_name, real_table_name)
         except:
             # FIXME signal to warn user (status)
             print('Cannot update ERROR')
             self._data[index.row()] = previous
+
         return False
 
     # noinspection PyMethodOverriding

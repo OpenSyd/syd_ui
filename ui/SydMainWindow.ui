@@ -14,9 +14,15 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="central_widget">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tab_widget">
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
       <property name="currentIndex">
        <number>-1</number>
       </property>

@@ -1,5 +1,5 @@
 from PySide2 import QtWidgets
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, Signal
 from PySide2.QtWidgets import QPushButton, QMenu, QAction
 from PySide2.QtWidgets import QSizePolicy, QSpacerItem, QTableView
 
@@ -7,33 +7,44 @@ from .SydColumnFilterHeader import SydColumnFilterHeader
 from .SydTableModel import SydTableModel
 from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 from .ui_SydTableWidget import Ui_SydTableWidget
-
+import syd
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
-    def __init__(self, table, parent=None):
+    table_reloaded = Signal()
+
+    def __init__(self, filename, table_name, parent=None):
         super().__init__(parent)
         self.setupUi(self)
 
         # internal members
+        self._filename = filename
+        self._table_name = table_name
         self._db = None
         self._data = None
-        self._table = table
         self._model = None
         self._filter_proxy_model = None
         self._header = None
         self._toggle_width_menus = []
+        self.button_reload.clicked.connect(self.slot_on_reload)
 
         # initial UI
+        #self.setAutoFillBackground(True)
         self.scrollArea.setVisible(False)
 
-    def set_data(self, db, table, data):
-        self._db = db
+    def table_name(self):
+        return self._table_name
+
+    def model(self):
+        return self._model
+
+    def set_data(self, data):
         self._data = data
-        self._table = table
+        db = self._db
+        table_name = self._table_name
 
         # define and set the model
-        self._model = SydTableModel(db, table, data)
+        self._model = SydTableModel(self._filename, db, table_name, data)
 
         # remove previous widget
         self.table_view.setParent(None)
@@ -101,6 +112,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
         # make the area invisible first
         self.scrollArea.setVisible(False)
+        #self.scrollArea.setAutoFillBackground(True)
+        #self.table_view.setAutoFillBackground(True)
+        self.table_view.setAlternatingRowColors(True)
 
         # initial nb of elements
         self.slot_on_col_filter_changed()
@@ -170,9 +184,20 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
     def slot_on_col_filter_changed(self):
         n = self._filter_proxy_model.rowCount()
         t = self._model.rowCount(None)
-        self.label_tablename.setText(f'{self._table}')
+        self.label_tablename.setText(f'{self._table_name}')
         self.label_status.setText(f'{n}/{t}')
 
     def slot_on_filter_changed(self):
         f = self.edit_filter
         self._filter_proxy_model.set_global_filter(f.text())
+
+    def slot_on_reload(self):
+        # later -> keep filters if the columns are identical.
+        # not clear why I need to reopen the db here
+        # (not needed for tables, needed for view)
+        self._db = syd.open_db(self._filename)
+        t = self._db.load_table(self._table_name)
+        elements = syd.find_all(t)
+        self.set_data(elements)
+        # indicate that the table has been reloaded
+        self.table_reloaded.emit()
