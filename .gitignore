@@ -5,3 +5,5 @@
 ui/__pycache__/
 /.idea/
 /old/
+/syd_ui.egg-info/
+
