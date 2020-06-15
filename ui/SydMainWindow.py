@@ -23,6 +23,7 @@ class SydMainWindow(QtWidgets.QMainWindow, Ui_SydMainWindow):
         db = syd.open_db(filename)
         self._db = db
         self._filename = filename
+        self.setWindowTitle(filename)
         self.setup_table_menus()
 
     def setup_table_menus(self):

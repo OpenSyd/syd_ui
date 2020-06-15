@@ -24,10 +24,4 @@ gen_ui(w, 'SydMainWindow')
 gen_ui(w, 'SydTableWidget')
 gen_ui(w, 'SydColumnFilterLineEditorWidget')
 
-#print('Generate RC')
-#if w:
-#    os.system("..\\venv\\Scripts\pyside2-rcc.exe qrc\\badminapp.qrc -o badminapp_rc.py")
-#else:
-#    os.system('pyside2-rcc qrc/badminapp.qrc -o badminapp_rc.py')
-
 os.system('ls -lrt ui')
