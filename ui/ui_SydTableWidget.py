@@ -3,16 +3,13 @@
 ################################################################################
 ## Form generated from reading UI file 'SydTableWidget.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.14.2
+## Created by: Qt User Interface Compiler version 5.15.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import (QCoreApplication, QDate, QDateTime, QMetaObject,
-    QObject, QPoint, QRect, QSize, QTime, QUrl, Qt)
-from PySide2.QtGui import (QBrush, QColor, QConicalGradient, QCursor, QFont,
-    QFontDatabase, QIcon, QKeySequence, QLinearGradient, QPalette, QPainter,
-    QPixmap, QRadialGradient)
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
 
@@ -48,6 +45,11 @@ class Ui_SydTableWidget(object):
 
         self.horizontalLayout.addWidget(self.button_reload)
 
+        self.button_view = QPushButton(SydTableWidget)
+        self.button_view.setObjectName(u"button_view")
+
+        self.horizontalLayout.addWidget(self.button_view)
+
         self.label_status = QLabel(SydTableWidget)
         self.label_status.setObjectName(u"label_status")
 
@@ -75,7 +77,7 @@ class Ui_SydTableWidget(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaContent = QWidget()
         self.scrollAreaContent.setObjectName(u"scrollAreaContent")
-        self.scrollAreaContent.setGeometry(QRect(0, 0, 1040, 44))
+        self.scrollAreaContent.setGeometry(QRect(0, 0, 1046, 28))
         self.layout_col_buttons = QHBoxLayout(self.scrollAreaContent)
         self.layout_col_buttons.setSpacing(0)
         self.layout_col_buttons.setObjectName(u"layout_col_buttons")
@@ -131,6 +133,7 @@ class Ui_SydTableWidget(object):
         self.label_tablename.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("SydTableWidget", u"Filter :", None))
         self.button_reload.setText(QCoreApplication.translate("SydTableWidget", u"reload", None))
+        self.button_view.setText(QCoreApplication.translate("SydTableWidget", u"view", None))
         self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.button1.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button2.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))

@@ -8,9 +8,10 @@ from .SydTableModel import SydTableModel
 from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 from .ui_SydTableWidget import Ui_SydTableWidget
 import syd
+import os
+
 
 class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
-
     table_reloaded = Signal()
 
     def __init__(self, filename, table_name, parent=None):
@@ -27,9 +28,11 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._header = None
         self._toggle_width_menus = []
         self.button_reload.clicked.connect(self.slot_on_reload)
+        self.button_view.hide()
+        self.button_view.clicked.connect(self.slot_on_view)
 
         # initial UI
-        #self.setAutoFillBackground(True)
+        # self.setAutoFillBackground(True)
         self.scrollArea.setVisible(False)
 
     def table_name(self):
@@ -112,8 +115,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
         # make the area invisible first
         self.scrollArea.setVisible(False)
-        #self.scrollArea.setAutoFillBackground(True)
-        #self.table_view.setAutoFillBackground(True)
+        # self.scrollArea.setAutoFillBackground(True)
+        # self.table_view.setAutoFillBackground(True)
         self.table_view.setAlternatingRowColors(True)
 
         # initial nb of elements
@@ -132,7 +135,6 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._filter_proxy_model.sort(0, Qt.AscendingOrder)
         self._filter_proxy_model.invalidateFilter()
         self._header.updateGeometries()
-
 
     def slot_on_column_header_popup(self, pos):
         idx = self.table_view.horizontalHeader().logicalIndexAt(pos)
@@ -186,6 +188,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         t = self._model.rowCount(None)
         self.label_tablename.setText(f'{self._table_name}')
         self.label_status.setText(f'{n}/{t}')
+        if self._table_name == 'Image' or self._table_name == 'DicomSeries':
+            self.button_view.show()
 
     def slot_on_filter_changed(self):
         f = self.edit_filter
@@ -201,3 +205,24 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.set_data(elements)
         # indicate that the table has been reloaded
         self.table_reloaded.emit()
+
+    def slot_on_view(self):
+        rows = set(index.row() for index in self.table_view.selectedIndexes())
+        if len(rows) > 1:
+            print("Plus d'un élément sélectionné")
+        elif len(rows) < 1:
+            print('Aucun élément sélectionné')
+        else:
+            for row in rows:
+                d = self._data[row]
+                if d['_table_name_'] == 'DicomSeries':
+                    db = syd.open_db(self._filename)
+                    dicom_file = syd.find_one(db['DicomFile'], dicom_series_id=d['id'])
+                    file = syd.find_one(db['File'], id=dicom_file['file_id'])
+                    path = db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename']
+                    cmd = f'vv {path}'
+                    os.system(cmd)
+                elif d['_table_name_'] == 'Image':
+                    print('')
+                else:
+                    print('La table séléctionnée ne correspond pas')
