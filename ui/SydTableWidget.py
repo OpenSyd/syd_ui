@@ -34,6 +34,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # initial UI
         # self.setAutoFillBackground(True)
         self.scrollArea.setVisible(False)
+        self.button_view.setEnabled(False)
 
     def table_name(self):
         return self._table_name
@@ -67,6 +68,11 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self._filter_proxy_model.setSortLocaleAware(True)
         self._filter_proxy_model.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.table_view.setModel(self._filter_proxy_model)
+
+        # selection model for the button_view
+        self.table_view.setSelectionBehavior(QTableView.SelectRows)
+        selection = self.table_view.selectionModel()
+        selection.selectionChanged.connect(self.on_selection_change)
 
         # set the columns filters
         self._header.set_filter_editors(ncol, self._filter_proxy_model)
@@ -192,6 +198,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
             self.button_view.show()
 
     def slot_on_filter_changed(self):
+        n = self._filter_proxy_model.rowCount()
+        t = self._model.rowCount(None)
+        self.label_status.setText(f'{n}/{t}')
         f = self.edit_filter
         self._filter_proxy_model.set_global_filter(f.text())
 
@@ -205,24 +214,44 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.set_data(elements)
         # indicate that the table has been reloaded
         self.table_reloaded.emit()
+        n = self._filter_proxy_model.rowCount()
+        t = self._model.rowCount(None)
+        self.label_status.setText(f'{n}/{t}')
+        self.button_view.setText("view in vv")
+        self.button_view.setEnabled(False)
 
     def slot_on_view(self):
         rows = set(index.row() for index in self.table_view.selectedIndexes())
-        if len(rows) > 1:
-            print("Plus d'un élément sélectionné")
-        elif len(rows) < 1:
-            print('Aucun élément sélectionné')
+
+        if len(rows) < 1:
+            print("Aucun élément sélectionné")
         else:
+            path = []
+
             for row in rows:
                 d = self._data[row]
                 if d['_table_name_'] == 'DicomSeries':
                     db = syd.open_db(self._filename)
                     dicom_file = syd.find_one(db['DicomFile'], dicom_series_id=d['id'])
                     file = syd.find_one(db['File'], id=dicom_file['file_id'])
-                    path = db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename']
-                    cmd = f'vv {path}'
-                    os.system(cmd)
+                    path.append(db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'])
                 elif d['_table_name_'] == 'Image':
                     print('')
                 else:
                     print('La table séléctionnée ne correspond pas')
+            if path != []:
+                path = ' '.join(path)
+                cmd = f'vv {path}'
+                os.system(cmd)
+            else:
+                print('Path to image has no corresponding file')
+
+    def on_selection_change(self):
+        rows = set(index.row() for index in self.table_view.selectedIndexes())
+        if len(rows) == 0:
+            self.button_view.setEnabled(False)
+            self.button_view.setText("view in vv")
+        else:
+            t = self._model.rowCount(None)
+            self.button_view.setText(f"view in vv {len(rows)}/{t}")
+            self.button_view.setEnabled(True)

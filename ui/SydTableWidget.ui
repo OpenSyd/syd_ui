@@ -59,7 +59,7 @@
      <item>
       <widget class="QPushButton" name="button_view">
        <property name="text">
-        <string>view</string>
+        <string>view in vv</string>
        </property>
       </widget>
      </item>

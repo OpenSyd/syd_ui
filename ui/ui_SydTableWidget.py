@@ -133,7 +133,7 @@ class Ui_SydTableWidget(object):
         self.label_tablename.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("SydTableWidget", u"Filter :", None))
         self.button_reload.setText(QCoreApplication.translate("SydTableWidget", u"reload", None))
-        self.button_view.setText(QCoreApplication.translate("SydTableWidget", u"view", None))
+        self.button_view.setText(QCoreApplication.translate("SydTableWidget", u"view in vv", None))
         self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.button1.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button2.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
