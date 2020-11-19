@@ -7,6 +7,7 @@ from .SydColumnFilterHeader import SydColumnFilterHeader
 from .SydTableModel import SydTableModel
 from .SydTableSortFilterProxyModel import SydTableSortFilterProxyModel
 from .ui_SydTableWidget import Ui_SydTableWidget
+from .SydCTWindow import SydCTWindow
 import syd
 import os
 
@@ -35,6 +36,9 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         # self.setAutoFillBackground(True)
         self.scrollArea.setVisible(False)
         self.button_view.setEnabled(False)
+
+        # pop-up window
+        self.w = None
 
     def table_name(self):
         return self._table_name
@@ -196,6 +200,8 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.label_status.setText(f'{n}/{t}')
         if self._table_name == 'Image' or self._table_name == 'DicomSeries':
             self.button_view.show()
+        elif self._table_name == "DicomSeries_default" or self._table_name == "Image_default":
+            self.button_view.show()
 
     def slot_on_filter_changed(self):
         n = self._filter_proxy_model.rowCount()
@@ -221,30 +227,18 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.button_view.setEnabled(False)
 
     def slot_on_view(self):
+        data = []
         rows = set(index.row() for index in self.table_view.selectedIndexes())
-
-        if len(rows) < 1:
-            print("Aucun élément sélectionné")
-        else:
-            path = []
-
-            for row in rows:
-                d = self._data[row]
-                if d['_table_name_'] == 'DicomSeries':
-                    db = syd.open_db(self._filename)
-                    dicom_file = syd.find_one(db['DicomFile'], dicom_series_id=d['id'])
-                    file = syd.find_one(db['File'], id=dicom_file['file_id'])
-                    path.append(db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'])
-                elif d['_table_name_'] == 'Image':
-                    print('')
-                else:
-                    print('La table séléctionnée ne correspond pas')
-            if path != []:
-                path = ' '.join(path)
-                cmd = f'vv {path}'
-                os.system(cmd)
-            else:
-                print('Path to image has no corresponding file')
+        for row in rows:
+            data.append(self._data[row])
+        self.w = SydCTWindow(data, self._filename, self._table_name)
+        self.w.button_ct_on.setEnabled(False)
+        db = syd.open_db(self._filename)
+        for d in data:
+            e = self.w.get_ct_path(db, d)
+            if e is not None and len(rows) == 1:
+                self.w.button_ct_on.setEnabled(True)
+        self.w.show()
 
     def on_selection_change(self):
         rows = set(index.row() for index in self.table_view.selectedIndexes())

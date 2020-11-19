@@ -50,6 +50,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_status">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="button_reload">
        <property name="text">
         <string>reload</string>
@@ -60,13 +67,6 @@
       <widget class="QPushButton" name="button_view">
        <property name="text">
         <string>view in vv</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_status">
-       <property name="text">
-        <string>TextLabel</string>
        </property>
       </widget>
      </item>

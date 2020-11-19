@@ -23,5 +23,6 @@ else:
 gen_ui(w, 'SydMainWindow')
 gen_ui(w, 'SydTableWidget')
 gen_ui(w, 'SydColumnFilterLineEditorWidget')
+gen_ui(w,  'SydCTWindow')
 
 os.system('ls -lrt ui')

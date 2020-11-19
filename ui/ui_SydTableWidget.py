@@ -40,6 +40,11 @@ class Ui_SydTableWidget(object):
 
         self.horizontalLayout.addWidget(self.edit_filter)
 
+        self.label_status = QLabel(SydTableWidget)
+        self.label_status.setObjectName(u"label_status")
+
+        self.horizontalLayout.addWidget(self.label_status)
+
         self.button_reload = QPushButton(SydTableWidget)
         self.button_reload.setObjectName(u"button_reload")
 
@@ -49,11 +54,6 @@ class Ui_SydTableWidget(object):
         self.button_view.setObjectName(u"button_view")
 
         self.horizontalLayout.addWidget(self.button_view)
-
-        self.label_status = QLabel(SydTableWidget)
-        self.label_status.setObjectName(u"label_status")
-
-        self.horizontalLayout.addWidget(self.label_status)
 
         self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -132,9 +132,9 @@ class Ui_SydTableWidget(object):
         SydTableWidget.setWindowTitle(QCoreApplication.translate("SydTableWidget", u"Form", None))
         self.label_tablename.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.label.setText(QCoreApplication.translate("SydTableWidget", u"Filter :", None))
+        self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.button_reload.setText(QCoreApplication.translate("SydTableWidget", u"reload", None))
         self.button_view.setText(QCoreApplication.translate("SydTableWidget", u"view in vv", None))
-        self.label_status.setText(QCoreApplication.translate("SydTableWidget", u"TextLabel", None))
         self.button1.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button2.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
         self.button3.setText(QCoreApplication.translate("SydTableWidget", u"dataset_name", None))
