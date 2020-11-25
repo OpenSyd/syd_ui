@@ -228,6 +228,7 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
 
     def slot_on_view(self):
         data = []
+        path = []
         rows = set(index.row() for index in self.table_view.selectedIndexes())
         for row in rows:
             data.append(self._data[row])
@@ -236,9 +237,28 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         db = syd.open_db(self._filename)
         for d in data:
             e = self.w.get_ct_path(db, d)
-            if e is not None and len(rows) == 1:
+            if e is not None and len(rows) == 1 and d['modality'] != 'CT':
                 self.w.button_ct_on.setEnabled(True)
-        self.w.show()
+                self.w.show()
+            else:
+                if self._table_name == 'DicomSeries' or self._table_name == 'DicomSeries_default':
+                    db = syd.open_db(self._filename)
+                    dicom_file = syd.find_one(db['DicomFile'], dicom_series_id=d['id'])
+                    file = syd.find_one(db['File'], id=dicom_file['file_id'])
+                    tmp = db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename']
+                    path.append(tmp)
+                elif self._table_name == 'Image' or self._table_name == 'Image_default':
+                    db = syd.open_db(self._filename)
+                    file = syd.find_one(db['File'], id=d['file_mhd_id'])
+                    path.append(db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'])
+                else:
+                    print('La table séléctionnée ne correspond pas')
+        if path != []:
+            path = ' '.join(path)
+            cmd = f'vv {path}'
+            os.system(cmd)
+        else:
+            print('Path to image has no corresponding file')
 
     def on_selection_change(self):
         rows = set(index.row() for index in self.table_view.selectedIndexes())
