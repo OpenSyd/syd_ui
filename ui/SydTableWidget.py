@@ -240,7 +240,13 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
         self.w.button_ct_on.setEnabled(False)
         db = syd.open_db(self._filename)
         for d in data:
-            e = self.w.get_ct_path(db, d)
+            if self._table_name == 'Image_default':
+                db = syd.open_db(self._filename)
+                d = syd.find_one(db['Image'], id=d['id'])
+            if self._table_name == 'DicomSeries' or self._table_name == 'DicomSeries_default':
+                e = self.w.get_ct_path_from_dicomSerie(db, d["id"])
+            elif self._table_name == 'Image' or self._table_name == 'Image_default':
+                e = self.w.get_ct_path_from_image(db, d)
             if e is not None and len(rows) == 1 and d['modality'] != 'CT':
                 self.w.button_ct_on.setEnabled(True)
                 self.w.show()

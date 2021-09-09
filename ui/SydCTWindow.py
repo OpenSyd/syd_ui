@@ -26,16 +26,31 @@ class SydCTWindow(QWidget, Ui_SydCTWindow):
                     if d['modality'] == 'CT':
                         print("This is already a CT")
                         db = syd.open_db(self._filename)
-                        path.append([self.get_file_path(db, d), 0])
+                        path.append([self.get_file_path_for_dicomSerie(db, d), 0])
                     else:
                         db = syd.open_db(self._filename)
-                        e = self.get_ct_path(db, d)
+                        e = self.get_ct_path_from_dicomSerie(db, d["id"])
                         if e is not None:
-                            path.append([self.get_file_path(db, d), e])
+                            path.append([self.get_file_path_for_dicomSerie(db, d), e])
                         else:
-                            path.append([self.get_file_path(db, d), 0])
+                            path.append([self.get_file_path_for_dicomSerie(db, d), 0])
                 elif self.table_name == 'Image' or self.table_name == 'Image_default':
-                    print('')
+                    if self.table_name == 'Image_default':
+                        db = syd.open_db(self._filename)
+                        d = syd.find_one(db['Image'], id=d['id'])
+                    if d['modality'] == 'CT':
+                        print("This is already a CT")
+                        db = syd.open_db(self._filename)
+                        file = syd.find_one(db['File'], id=d['file_mhd_id'])
+                        path.append([db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'], 0])
+                    else:
+                        db = syd.open_db(self._filename)
+                        e = self.get_ct_path_from_image(db, d)
+                        file = syd.find_one(db['File'], id=d['file_mhd_id'])
+                        if e is not None:
+                            path.append([db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'], e])
+                        else:
+                            path.append([db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'], 0])
 
         if len(path) == 1:
             if path[0][1] != 0:
@@ -58,9 +73,11 @@ class SydCTWindow(QWidget, Ui_SydCTWindow):
             for d in self._data:
                 if self.table_name == 'DicomSeries' or self.table_name == 'DicomSeries_default':
                     db = syd.open_db(self._filename)
-                    path.append(self.get_file_path(db, d))
+                    path.append(self.get_file_path_for_dicomSerie(db, d))
                 elif self.table_name == 'Image' or self.table_name == 'Image_default':
                     db = syd.open_db(self._filename)
+                    if self.table_name == 'Image_default':
+                        d = syd.find_one(db['Image'], id=d['id'])
                     file = syd.find_one(db['File'], id=d['file_mhd_id'])
                     path.append(db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename'])
                 else:
@@ -73,14 +90,21 @@ class SydCTWindow(QWidget, Ui_SydCTWindow):
                 print('Path to image has no corresponding file')
         self.hide()
 
-    def get_file_path(self, db, d):
+    def get_file_path_for_dicomSerie(self, db, d):
         dicom_file = syd.find_one(db['DicomFile'], dicom_series_id=d['id'])
         file = syd.find_one(db['File'], id=dicom_file['file_id'])
         return db.absolute_data_folder + '/' + file['folder'] + '/' + file['filename']
 
-    def get_ct_path(self, db, d):
+    def get_ct_path_from_image(self, db, d):
+        path = self.get_ct_path_from_dicomSerie(db, d['dicom_series_id'])
+        return path
+
+    def get_ct_path_from_dicomSerie(self, db, id):
+        """
+        id is the id of the DicomSerie
+        """
         path = None
-        e = syd.syd_find_ct(db, d['id'])
+        e = syd.syd_find_ct(db, id)
         if len(e) < 1:
             return path
         else:
@@ -88,7 +112,7 @@ class SydCTWindow(QWidget, Ui_SydCTWindow):
             dicom_id = e[0][0]
             image_id = e[0][1]
             ct = syd.find_one(db['DicomSeries'], id=dicom_id)
-            path = self.get_file_path(db, ct)
+            path = self.get_file_path_for_dicomSerie(db, ct)
             if image_id != 0:
                 im = syd.find_one(db['Image'], id=image_id)
                 file_mhd_id = im['file_mhd_id']
