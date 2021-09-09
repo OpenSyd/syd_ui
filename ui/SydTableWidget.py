@@ -229,7 +229,11 @@ class SydTableWidget(QtWidgets.QWidget, Ui_SydTableWidget):
     def slot_on_view(self):
         data = []
         path = []
-        rows = set(index.row() for index in self.table_view.selectedIndexes())
+        selectedRows = self.table_view.selectedIndexes()
+        modelRows = []
+        for selectedRow in selectedRows:
+          modelRows.append(self._filter_proxy_model.mapToSource(selectedRow).row())
+        rows = set(modelRows)
         for row in rows:
             data.append(self._data[row])
         self.w = SydCTWindow(data, self._filename, self._table_name)
